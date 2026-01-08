@@ -1,13 +1,7 @@
 """
 Workshop utilities for FLoW-Net.
 """
-import os
 import sys
-
-# Disable wandb's PyTorch integration to prevent hook conflicts in Colab
-os.environ["WANDB_DISABLED"] = "true"
-os.environ["WANDB_MODE"] = "disabled"
-
 import numpy as np
 import torch
 from pathlib import Path
@@ -26,13 +20,6 @@ from src.SimpleDTU10MW import SimpleDTU10MW
 def load_model(path, device='cpu'):
     """Load a saved model."""
     model = torch.load(path, map_location=device, weights_only=False)
-    
-    # Remove all forward and backward hooks (e.g., from wandb)
-    for name, module in model.named_modules():
-        module._forward_hooks.clear()
-        module._forward_pre_hooks.clear()
-        module._backward_hooks.clear()
-    
     model.to(device)
     model.eval()
     return model
@@ -286,13 +273,6 @@ def prepare_batch(samples, normalize_output=False):
 def predict(model, sample, device='cpu'):
     """Run inference and denormalize output."""
     model.eval()
-    
-    # Clear any hooks that may have been added (e.g., by wandb)
-    for module in model.modules():
-        module._forward_hooks.clear()
-        module._forward_pre_hooks.clear()
-        module._backward_hooks.clear()
-    
     grid, _, labels = prepare_sample(sample, normalize_output=False)
     
     with torch.no_grad():
