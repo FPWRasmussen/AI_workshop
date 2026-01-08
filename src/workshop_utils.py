@@ -18,22 +18,14 @@ from src.SimpleDTU10MW import SimpleDTU10MW
 
 
 def load_model(path, device='cpu'):
-    """Load a saved model (state_dict or full model)."""
-    checkpoint = torch.load(path, map_location=device, weights_only=False)
+    """Load a saved model."""
+    model = torch.load(path, map_location=device, weights_only=False)
     
-    # If it's a state_dict, create a new model and load the weights
-    if isinstance(checkpoint, dict) and 'state_dict' in checkpoint:
-        model = ARUNet()
-        model.load_state_dict(checkpoint['state_dict'])
-    elif isinstance(checkpoint, dict) and not hasattr(checkpoint, 'eval'):
-        # Plain state_dict without wrapper
-        model = ARUNet()
-        model.load_state_dict(checkpoint)
-    else:
-        # Full model object - recreate to avoid wandb hooks
-        state_dict = checkpoint.state_dict()
-        model = ARUNet()
-        model.load_state_dict(state_dict)
+    # Remove all forward and backward hooks (e.g., from wandb)
+    for name, module in model.named_modules():
+        module._forward_hooks.clear()
+        module._forward_pre_hooks.clear()
+        module._backward_hooks.clear()
     
     model.to(device)
     model.eval()
