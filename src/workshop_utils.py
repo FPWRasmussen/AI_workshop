@@ -280,6 +280,13 @@ def prepare_batch(samples, normalize_output=False):
 def predict(model, sample, device='cpu'):
     """Run inference and denormalize output."""
     model.eval()
+    
+    # Clear any hooks that may have been added (e.g., by wandb)
+    for module in model.modules():
+        module._forward_hooks.clear()
+        module._forward_pre_hooks.clear()
+        module._backward_hooks.clear()
+    
     grid, _, labels = prepare_sample(sample, normalize_output=False)
     
     with torch.no_grad():
