@@ -1,7 +1,13 @@
 """
 Workshop utilities for FLoW-Net.
 """
+import os
 import sys
+
+# Disable wandb's PyTorch integration to prevent hook conflicts in Colab
+os.environ["WANDB_DISABLED"] = "true"
+os.environ["WANDB_MODE"] = "disabled"
+
 import numpy as np
 import torch
 from pathlib import Path
