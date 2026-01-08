@@ -7,7 +7,7 @@ import torch
 from pathlib import Path
 from shapely.geometry import Point, Polygon
 from shapely.affinity import scale
-from src.aru_net import ARUNet
+from models.aru_net import ARUNet
 from py_wake.site._site import UniformSite
 from py_wake.flow_map import HorizontalGrid
 from py_wake.wind_farm_models import PropagateDownwind
